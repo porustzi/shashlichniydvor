@@ -7,6 +7,7 @@ import { PopularDishes } from '@/components/home/popular-dishes';
 import { CategoriesPreview } from '@/components/home/categories-preview';
 import { DeliveryInfo } from '@/components/home/delivery-info';
 import { ReservationCTA } from '@/components/home/reservation-cta';
+import { fallbackCategories, fallbackDishes } from '@/lib/fallback-data';
 import type { Category, DishWithCategory } from '@/lib/database.types';
 
 export default function HomePage() {
@@ -16,23 +17,38 @@ export default function HomePage() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: categoriesData } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
+      try {
+        const { data: categoriesData, error: categoriesError } = await supabase
+          .from('categories')
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
 
-      const { data: dishesData } = await supabase
-        .from('dishes')
-        .select('*, categories(*)')
-        .eq('is_available', true)
-        .eq('is_popular', true)
-        .order('display_order', { ascending: true })
-        .limit(8);
+        const { data: dishesData, error: dishesError } = await supabase
+          .from('dishes')
+          .select('*, categories(*)')
+          .eq('is_available', true)
+          .eq('is_popular', true)
+          .order('display_order', { ascending: true })
+          .limit(8);
 
-      setCategories(categoriesData || []);
-      setDishes(dishesData || []);
-      setLoading(false);
+        if (categoriesError || !categoriesData || categoriesData.length === 0) {
+          setCategories(fallbackCategories);
+        } else {
+          setCategories(categoriesData);
+        }
+
+        if (dishesError || !dishesData || dishesData.length === 0) {
+          setDishes(fallbackDishes.filter((d) => d.is_popular).slice(0, 8));
+        } else {
+          setDishes(dishesData);
+        }
+      } catch {
+        setCategories(fallbackCategories);
+        setDishes(fallbackDishes.filter((d) => d.is_popular).slice(0, 8));
+      } finally {
+        setLoading(false);
+      }
     }
 
     fetchData();

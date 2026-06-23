@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { MenuClient } from './menu-client';
+import { fallbackCategories, fallbackDishes } from '@/lib/fallback-data';
 import type { Category, DishWithCategory } from '@/lib/database.types';
 
 export default function MenuPage() {
@@ -17,38 +18,53 @@ export default function MenuPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: categoriesData } = await supabase
-        .from('categories')
-        .select('*')
-        .eq('is_active', true)
-        .order('display_order', { ascending: true });
-
-      let dishesQuery = supabase
-        .from('dishes')
-        .select('*, categories(*)')
-        .eq('is_available', true)
-        .order('display_order', { ascending: true });
-
-      if (categorySlug && categorySlug !== 'all') {
-        const { data: category } = await (supabase as any)
+      try {
+        const { data: categoriesData, error: categoriesError } = await supabase
           .from('categories')
-          .select('id')
-          .eq('slug', categorySlug)
-          .single();
-        if (category) {
-          dishesQuery = dishesQuery.eq('category_id', (category as any).id);
+          .select('*')
+          .eq('is_active', true)
+          .order('display_order', { ascending: true });
+
+        let dishesQuery = supabase
+          .from('dishes')
+          .select('*, categories(*)')
+          .eq('is_available', true)
+          .order('display_order', { ascending: true });
+
+        if (categorySlug && categorySlug !== 'all') {
+          const { data: category } = await (supabase as any)
+            .from('categories')
+            .select('id')
+            .eq('slug', categorySlug)
+            .single();
+          if (category) {
+            dishesQuery = dishesQuery.eq('category_id', (category as any).id);
+          }
         }
+
+        if (searchQuery) {
+          dishesQuery = dishesQuery.ilike('name', `%${searchQuery}%`);
+        }
+
+        const { data: dishesData, error: dishesError } = await dishesQuery;
+
+        if (categoriesError || !categoriesData || categoriesData.length === 0) {
+          setCategories(fallbackCategories);
+        } else {
+          setCategories(categoriesData);
+        }
+
+        if (dishesError || !dishesData || dishesData.length === 0) {
+          setDishes(fallbackDishes);
+        } else {
+          setDishes(dishesData);
+        }
+      } catch {
+        setCategories(fallbackCategories);
+        setDishes(fallbackDishes);
+      } finally {
+        setLoading(false);
       }
-
-      if (searchQuery) {
-        dishesQuery = dishesQuery.ilike('name', `%${searchQuery}%`);
-      }
-
-      const { data: dishesData } = await dishesQuery;
-
-      setCategories(categoriesData || []);
-      setDishes(dishesData || []);
-      setLoading(false);
     }
 
     fetchData();
