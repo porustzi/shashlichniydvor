@@ -23,8 +23,6 @@ export function Header() {
   const { items, toggleCart } = useCartStore();
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-  const isAdmin = pathname.startsWith('/admin');
-
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-3 sm:px-4">
@@ -53,30 +51,22 @@ export function Header() {
           </nav>
 
           <div className="flex items-center gap-1 sm:gap-3">
-            {!isAdmin && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative"
-                onClick={toggleCart}
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {totalItems > 0 && (
-                  <Badge
-                    variant="default"
-                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
-                  >
-                    {totalItems}
-                  </Badge>
-                )}
-              </Button>
-            )}
-
-            <Link href="/admin" className="hidden sm:block">
-              <Button variant="outline" size="sm" className="text-xs sm:text-sm h-8 sm:h-9">
-                Адмін
-              </Button>
-            </Link>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="relative"
+              onClick={toggleCart}
+            >
+              <ShoppingBag className="w-5 h-5" />
+              {totalItems > 0 && (
+                <Badge
+                  variant="default"
+                  className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+                >
+                  {totalItems}
+                </Badge>
+              )}
+            </Button>
 
             <Button
               variant="ghost"
@@ -107,11 +97,6 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
-              <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="mt-2">
-                <Button variant="outline" size="sm" className="w-full">
-                  Адмін панель
-                </Button>
-              </Link>
             </nav>
           </div>
         )}
