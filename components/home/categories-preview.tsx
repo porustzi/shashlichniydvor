@@ -11,7 +11,7 @@ const categoryImages: Record<string, string> = {
   steaks: 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80',
   salads: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80',
   soups: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80',
-  garnirs: 'https://images.unsplash.com/photo-1592415497089-6c3cf76b3d2e?w=600&q=80',
+  garnirs: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=600&q=80',
   drinks: 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80',
   deserts: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80',
   default: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80',
