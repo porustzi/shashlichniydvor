@@ -30,12 +30,10 @@ const dishImages: Record<string, string> = {
   'honey-cake': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80',
 };
 
-const fallbackImage =
-  'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80';
+const fallbackImage = 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80';
 
 export function DishCard({ dish }: DishCardProps) {
   const addItem = useCartStore((state) => state.addItem);
-  const openCart = useCartStore((state) => state.openCart);
 
   const handleAddToCart = () => {
     addItem({
@@ -47,53 +45,58 @@ export function DishCard({ dish }: DishCardProps) {
     toast.success(`${dish.name} додано до кошика`);
   };
 
-  const imageUrl =
-    dish.image_url || dishImages[dish.slug] || fallbackImage;
+  const imageUrl = dish.image_url || dishImages[dish.slug] || fallbackImage;
 
   return (
-    <div className="group rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
-      <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+    <div className="flex flex-col sm:flex-row rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
+      <div className="relative w-full sm:w-44 lg:w-52 shrink-0 aspect-[4/3] sm:aspect-auto sm:min-h-[160px] overflow-hidden bg-muted">
         <img
           src={imageUrl}
           alt={dish.name}
           className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
         {dish.is_popular && (
-          <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground shadow-lg">
+          <Badge className="absolute top-2 left-2 sm:top-3 sm:left-3 bg-primary text-primary-foreground shadow-lg text-xs">
             <Flame className="w-3 h-3 mr-1" />
             Хіт
           </Badge>
         )}
       </div>
 
-      <div className="p-4">
-        <h3 className="font-semibold text-lg mb-1">{dish.name}</h3>
-        {dish.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
-            {dish.description}
-          </p>
-        )}
+      <div className="flex-1 flex flex-col p-3 sm:p-4 min-w-0">
+        <div className="flex items-start justify-between gap-2 mb-1">
+          <h3 className="font-semibold text-base sm:text-lg leading-tight">{dish.name}</h3>
+        </div>
+
         {dish.ingredients && dish.ingredients.length > 0 && (
-          <p className="text-xs text-muted-foreground line-clamp-1 mb-3">
+          <p className="text-xs text-muted-foreground mb-1.5 line-clamp-1">
             {dish.ingredients.join(', ')}
           </p>
         )}
-        <div className="flex items-center justify-between pt-2 border-t">
-          <div>
-            <span className="text-xl font-bold text-primary">
+
+        {dish.description && (
+          <p className="text-xs sm:text-sm text-muted-foreground line-clamp-2 leading-relaxed mb-3">
+            {dish.description}
+          </p>
+        )}
+
+        <div className="mt-auto flex items-center justify-between pt-2 border-t">
+          <div className="flex items-baseline gap-2">
+            <span className="text-lg sm:text-xl font-bold text-primary">
               {Number(dish.price).toFixed(0)}
             </span>
-            <span className="text-sm text-muted-foreground ml-1">грн</span>
+            <span className="text-xs sm:text-sm text-muted-foreground">грн</span>
             {dish.weight_grams && (
-              <span className="text-xs text-muted-foreground ml-2">
+              <span className="text-xs text-muted-foreground">
                 / {dish.weight_grams}г
               </span>
             )}
           </div>
-          <Button size="sm" onClick={handleAddToCart} className="shadow-sm">
+          <Button size="sm" onClick={handleAddToCart} className="shadow-sm shrink-0 h-8 sm:h-9 px-3">
             <Plus className="w-4 h-4" />
+            <span className="hidden sm:inline ml-1">Додати</span>
           </Button>
         </div>
       </div>
