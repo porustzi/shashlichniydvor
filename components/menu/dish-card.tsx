@@ -12,23 +12,26 @@ interface DishCardProps {
 }
 
 const dishImages: Record<string, string> = {
-  'shashlyk-svynya': 'https://images.pexels.com/photos/2234526/pexels-photo-2234526.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'shashlyk-yalovychyna': 'https://images.pexels.com/photos/2429758/pexels-photo-2429758.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'shashlyk-kurka': 'https://images.pexels.com/photos/1624487/pexels-photo-1624487.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'shashlyk-barannya': 'https://images.pexels.com/photos/5739297/pexels-photo-5739297.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'steak-ribeye': 'https://images.pexels.com/photos/7675595/pexels-photo-7675595.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'steak-filet-mignon': 'https://images.pexels.com/photos/8969230/pexels-photo-8969230.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'salad-caesar': 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'salad-greek': 'https://images.pexels.com/photos/1640773/pexels-photo-1640773.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'borsch': 'https://images.pexels.com/photos/1893509/pexels-photo-1893509.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'solyanka': 'https://images.pexels.com/photos/1600734/pexels-photo-1600734.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'potato-village': 'https://images.pexels.com/photos/1184072/pexels-photo-1184072.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'vegetables-grill': 'https://images.pexels.com/photos/10982369/pexels-photo-10982369.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'lemonade': 'https://images.pexels.com/photos/1092730/pexels-photo-1092730.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'tea-thyme': 'https://images.pexels.com/photos/1679909/pexels-photo-1679909.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'napoleon-cake': 'https://images.pexels.com/photos/1126359/pexels-photo-1126359.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'honey-cake': 'https://images.pexels.com/photos/4620687/pexels-photo-4620687.jpeg?auto=compress&cs=tinysrgb&w=600',
+  'shashlyk-svynya': 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80',
+  'shashlyk-yalovychyna': 'https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80',
+  'shashlyk-kurka': 'https://images.unsplash.com/photo-1532550907401-a500c9a57435?w=600&q=80',
+  'shashlyk-barannya': 'https://images.unsplash.com/photo-1544025162-d76694265947?w=600&q=80',
+  'steak-ribeye': 'https://images.unsplash.com/photo-1546833998-877b37c2e5c6?w=600&q=80',
+  'steak-filet-mignon': 'https://images.unsplash.com/photo-1603048297172-925c627c9cfb?w=600&q=80',
+  'salad-caesar': 'https://images.unsplash.com/photo-1550304943-4f24f54ddde9?w=600&q=80',
+  'salad-greek': 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=600&q=80',
+  'borsch': 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=600&q=80',
+  'solyanka': 'https://images.unsplash.com/photo-1604762524885-3b3f7e0c6d8a?w=600&q=80',
+  'potato-village': 'https://images.unsplash.com/photo-1592415497089-6c3cf76b3d2e?w=600&q=80',
+  'vegetables-grill': 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=600&q=80',
+  'lemonade': 'https://images.unsplash.com/photo-1544145945-f90425340c7e?w=600&q=80',
+  'tea-thyme': 'https://images.unsplash.com/photo-1571934811356-5cc061b6821f?w=600&q=80',
+  'napoleon-cake': 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=600&q=80',
+  'honey-cake': 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80',
 };
+
+const fallbackImage =
+  'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80';
 
 export function DishCard({ dish }: DishCardProps) {
   const addItem = useCartStore((state) => state.addItem);
@@ -39,23 +42,26 @@ export function DishCard({ dish }: DishCardProps) {
       id: dish.id,
       name: dish.name,
       price: Number(dish.price),
-      imageUrl: dish.image_url || dishImages[dish.slug],
+      imageUrl: dish.image_url || dishImages[dish.slug] || fallbackImage,
     });
     toast.success(`${dish.name} додано до кошика`);
   };
 
-  const imageUrl = dish.image_url || dishImages[dish.slug] || 'https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=600';
+  const imageUrl =
+    dish.image_url || dishImages[dish.slug] || fallbackImage;
 
   return (
-    <div className="group rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-md transition-all">
+    <div className="group rounded-xl border bg-card overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300">
       <div className="relative aspect-[4/3] overflow-hidden bg-muted">
         <img
           src={imageUrl}
           alt={dish.name}
-          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+          className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
+          loading="lazy"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         {dish.is_popular && (
-          <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground">
+          <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground shadow-lg">
             <Flame className="w-3 h-3 mr-1" />
             Хіт
           </Badge>
@@ -65,7 +71,7 @@ export function DishCard({ dish }: DishCardProps) {
       <div className="p-4">
         <h3 className="font-semibold text-lg mb-1">{dish.name}</h3>
         {dish.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+          <p className="text-sm text-muted-foreground line-clamp-2 mb-2 leading-relaxed">
             {dish.description}
           </p>
         )}
@@ -74,7 +80,7 @@ export function DishCard({ dish }: DishCardProps) {
             {dish.ingredients.join(', ')}
           </p>
         )}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between pt-2 border-t">
           <div>
             <span className="text-xl font-bold text-primary">
               {Number(dish.price).toFixed(0)}
@@ -86,7 +92,7 @@ export function DishCard({ dish }: DishCardProps) {
               </span>
             )}
           </div>
-          <Button size="sm" onClick={handleAddToCart}>
+          <Button size="sm" onClick={handleAddToCart} className="shadow-sm">
             <Plus className="w-4 h-4" />
           </Button>
         </div>

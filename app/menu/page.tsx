@@ -1,51 +1,73 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { MenuClient } from './menu-client';
+import type { Category, DishWithCategory } from '@/lib/database.types';
 
-interface MenuPageProps {
-  searchParams: {
-    category?: string;
-    search?: string;
-  };
-}
+export default function MenuPage() {
+  const searchParams = useSearchParams();
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [dishes, setDishes] = useState<DishWithCategory[]>([]);
+  const [loading, setLoading] = useState(true);
 
-export default async function MenuPage({ searchParams }: MenuPageProps) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: categories } = await (supabase as any)
-    .from('categories')
-    .select('*')
-    .eq('is_active', true)
-    .order('display_order', { ascending: true });
+  const categorySlug = searchParams.get('category') || 'all';
+  const searchQuery = searchParams.get('search') || '';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let dishesQuery = supabase
-    .from('dishes')
-    .select('*, categories(*)')
-    .eq('is_available', true)
-    .order('display_order', { ascending: true }) as any;
+  useEffect(() => {
+    async function fetchData() {
+      const { data: categoriesData } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('is_active', true)
+        .order('display_order', { ascending: true });
 
-  if (searchParams.category && searchParams.category !== 'all') {
-    const { data: category } = await supabase
-      .from('categories')
-      .select('id')
-      .eq('slug', searchParams.category)
-      .single();
-    if (category && (category as any).id) {
-      dishesQuery = dishesQuery.eq('category_id', (category as any).id);
+      let dishesQuery = supabase
+        .from('dishes')
+        .select('*, categories(*)')
+        .eq('is_available', true)
+        .order('display_order', { ascending: true });
+
+      if (categorySlug && categorySlug !== 'all') {
+        const { data: category } = await (supabase as any)
+          .from('categories')
+          .select('id')
+          .eq('slug', categorySlug)
+          .single();
+        if (category) {
+          dishesQuery = dishesQuery.eq('category_id', (category as any).id);
+        }
+      }
+
+      if (searchQuery) {
+        dishesQuery = dishesQuery.ilike('name', `%${searchQuery}%`);
+      }
+
+      const { data: dishesData } = await dishesQuery;
+
+      setCategories(categoriesData || []);
+      setDishes(dishesData || []);
+      setLoading(false);
     }
-  }
 
-  if (searchParams.search) {
-    dishesQuery = dishesQuery.ilike('name', `%${searchParams.search}%`);
-  }
+    fetchData();
+  }, [categorySlug, searchQuery]);
 
-  const { data: dishes } = await dishesQuery;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-muted-foreground">Завантаження...</div>
+      </div>
+    );
+  }
 
   return (
     <MenuClient
-      categories={categories || []}
-      dishes={dishes || []}
-      initialCategory={searchParams.category || 'all'}
-      initialSearch={searchParams.search || ''}
+      categories={categories}
+      dishes={dishes}
+      initialCategory={categorySlug}
+      initialSearch={searchQuery}
     />
   );
 }
